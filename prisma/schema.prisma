@@ -1,0 +1,32 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(uuid())
+  nickname  String   @unique @db.VarChar(255)
+  password  String   @default("") @db.VarChar(255)
+  updatedAt DateTime @default(now()) @updatedAt
+  createdAt DateTime @default(now())
+}
+
+model Parking {
+  id            String    @id @default(uuid())
+  licensePlate  String    @db.VarChar(16)
+  hourEntry     DateTime  @db.Timestamp()
+  hourExit      DateTime? @db.Timestamp()
+  timeOfParking BigInt?   @db.BigInt
+  valueToPay    Decimal?  @db.Decimal(10, 2)
+  valuePaid     Decimal?  @db.Decimal(10, 2)
+  discount      Decimal?  @db.Decimal(10, 2)
+  updatedAt     DateTime  @default(now()) @updatedAt
+  createdAt     DateTime  @default(now())
+}
