@@ -10,9 +10,9 @@ import { CreateAccountInput } from "app/dtos/CreateAccountDTO";
 import { ShowAccountInput } from "app/dtos/ShowAccountDTO";
 import { UpdateAccountInput } from "app/dtos/UpdateAccountDTO";
 
-import { AdminValidator } from "app/validators/DeleteAccountValidator";
-import { AdminValidator } from "app/validators/ShowAccountValidator";
-import { AdminValidator } from "app/validators/CreateAccountValidator";
+import { UpdateAccountValidator } from "app/validators/UpdateAccountValidator";
+// import { AdminValidator } from "app/validators/DeleteAccountValidator";
+// import { AdminValidator } from "app/validators/ShowAccountValidator";
 
 import { PrismaRepositoryFactory } from "shared/infra/factory/PrismaRepositoryFactory";
 import { registerAdminMiddleware } from "shared/middlewares/functions/registerAdmin";
@@ -28,9 +28,37 @@ const handler = async (request: NextApiRequest, response: NextApiResponse) => {
   });
 
   try {
+    const { id } = request.query;
+
     if (request.method == "PUT") {
-      // Edita Conta
-      return response.status(404).json("");
+      // Registra conta
+      const accountUpdateValidator = new UpdateAccountValidator(request.body);
+
+      const isValidData = await accountUpdateValidator.validateData(
+        accountUpdateValidator
+      );
+
+      if (isValidData.isLeft()) {
+        return response.status(isValidData.value.statusCode).json({
+          describe: isValidData.value.describe,
+          result: isValidData.value.result,
+        });
+      }
+
+      const prismaRepositoryFactory = new PrismaRepositoryFactory();
+
+      const updateAccountInput = new UpdateAccountInput({
+        ...accountUpdateValidator,
+        id: String(id),
+      });
+
+      const updateAccount = new UpdateAccount(prismaRepositoryFactory);
+
+      const createAccountOutput = await updateAccount.execute(
+        updateAccountInput
+      );
+
+      return response.status(200).json(createAccountOutput);
     }
 
     if (request.method == "GET") {

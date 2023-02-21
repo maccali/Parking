@@ -9,8 +9,8 @@ export class CreateAccountDomain {
   async create(payload: Account) {
     const accountRepository = this.repositoryFactory.getAccountRepository();
 
-    const admin = await accountRepository.save(payload);
+    const account = await accountRepository.save(payload);
 
-    return admin;
+    return account;
   }
 }
