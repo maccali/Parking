@@ -7,11 +7,10 @@ import { CreateAccountValidator } from "app/validators/CreateAccountValidator";
 import { NextApiRequest, NextApiResponse } from "next";
 import NextCors from "nextjs-cors";
 import { left } from "shared/either";
+
 import { PrismaRepositoryFactory } from "shared/infra/factory/PrismaRepositoryFactory";
-import { registerAdminMiddleware } from "shared/middlewares/functions/registerAdmin";
 import { GenericLeftSolver } from "shared/solvers/left/genericLeftSolver";
-import { EnvHelper } from "shared/utils/envHelper";
-import { v4 as uuidv4 } from "uuid";
+
 
 const handler = async (request: NextApiRequest, response: NextApiResponse) => {
   await NextCors(request, response, {

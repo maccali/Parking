@@ -3,12 +3,12 @@ import { v4 as uuid } from "uuid";
 export class Parking {
   id?: string;
   licensePlate: string;
-  hourEntry: number;
-  hourExit: number;
-  timeOfParking: number;
-  valueToPay: number;
-  valuePaid: number;
-  discount: number;
+  hourEntry?: string;
+  hourExit?: string;
+  timeOfParking?: number;
+  valueToPay?: number;
+  valuePaid?: number;
+  discount?: number;
   createdAt?: number;
   updatedAt?: number;
 
@@ -27,7 +27,10 @@ export class Parking {
     this.id = id;
 
     this.licensePlate = licensePlate;
-    this.hourEntry = hourEntry;
+    if (!this.hourEntry) {
+      this.hourEntry = new Date(createDate);
+    }
+
     this.hourExit = hourExit;
     this.timeOfParking = timeOfParking;
     this.valueToPay = valueToPay;

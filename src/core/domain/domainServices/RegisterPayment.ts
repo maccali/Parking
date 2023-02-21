@@ -1,30 +1,21 @@
 import { AbstractRepositoryFactory } from "../factory/AbstractRepositoryFactory";
-import { LoggerInterface } from "shared/infra/logger/logger.interface";
-
-export class FindAdmin {
+import { Parking } from "../entities/Parking";
+export class RegisterPaymentDomain {
   repositoryFactory: AbstractRepositoryFactory;
-  logger: LoggerInterface;
 
-  constructor(
-    repositoryFactory: AbstractRepositoryFactory,
-    logger: LoggerInterface
-  ) {
+  constructor(repositoryFactory: AbstractRepositoryFactory) {
     this.repositoryFactory = repositoryFactory;
-    this.logger = logger;
   }
 
-  async find(id: string) {
-    this.logger.info({ message: "INIT find" });
+  async update(payload: Parking) {
+    const parkingRepository = this.repositoryFactory.getParkingRepository();
 
-    this.logger.info({
-      message: "EXEC this.repositoryFactory.getAdminRepository",
-    });
-    const adminRepository = this.repositoryFactory.getAdminRepository();
+    console.log("payload", payload);
 
-    this.logger.info({ message: "EXEC adminRepository.findById" });
-    const admin = await adminRepository.findById(id);
+    payload.valuePaid = payload.valueToPay;
 
-    this.logger.info({ message: "RETURN OF find" });
-    return admin;
+    const parking = await parkingRepository.update(payload);
+
+    return parking;
   }
 }

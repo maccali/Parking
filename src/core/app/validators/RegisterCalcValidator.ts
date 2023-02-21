@@ -3,15 +3,15 @@ import { left, right } from "shared/either";
 import { GenericLeftSolver } from "shared/solvers/left/genericLeftSolver";
 import { GenericRightSolver } from "shared/solvers/right/genericRightSolver";
 
-export class RegisterPaymentValidator {
+export class RegisterCalcValidator {
   @IsString()
   licensePlate: string;
 
-  constructor({ licensePlate }: RegisterPaymentValidator) {
+  constructor({ licensePlate }: RegisterCalcValidator) {
     this.licensePlate = licensePlate;
   }
 
-  async validateData(admin: RegisterPaymentValidator) {
+  async validateData(admin: RegisterCalcValidator) {
     const errors = await validate(admin);
 
     if (!errors.length) {

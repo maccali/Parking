@@ -11,6 +11,8 @@ import { ISuccess } from "shared/ISuccess";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 
+import { EnvHelper } from "shared/utils/envHelper";
+
 interface IExecInput {
   nickname: string;
   password: string;
@@ -44,7 +46,7 @@ export class AuthAccount {
 
     const token = jwt.sign(
       { id: accountNicknameDomain.id },
-      "minha_chave_secreta",
+      String(EnvHelper.jwtKey),
       { expiresIn: "1h" }
     );
 

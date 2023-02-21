@@ -23,7 +23,7 @@ model Parking {
   licensePlate  String    @db.VarChar(16)
   hourEntry     DateTime  @db.Timestamp()
   hourExit      DateTime? @db.Timestamp()
-  timeOfParking BigInt?   @db.BigInt
+  timeOfParking Decimal?  @db.Decimal(20, 0)
   valueToPay    Decimal?  @db.Decimal(10, 2)
   valuePaid     Decimal?  @db.Decimal(10, 2)
   discount      Decimal?  @db.Decimal(10, 2)

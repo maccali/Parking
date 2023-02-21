@@ -1,30 +1,48 @@
 import { AbstractRepositoryFactory } from "../factory/AbstractRepositoryFactory";
-import { LoggerInterface } from "shared/infra/logger/logger.interface";
-
-export class FindAdmin {
+import { Parking } from "../entities/Parking";
+export class CalcValueDomain {
   repositoryFactory: AbstractRepositoryFactory;
-  logger: LoggerInterface;
 
-  constructor(
-    repositoryFactory: AbstractRepositoryFactory,
-    logger: LoggerInterface
-  ) {
+  constructor(repositoryFactory: AbstractRepositoryFactory) {
     this.repositoryFactory = repositoryFactory;
-    this.logger = logger;
   }
 
-  async find(id: string) {
-    this.logger.info({ message: "INIT find" });
+  async calc(payload: Parking) {
+    const dateToExit = new Date().getTime();
+    const dateToEntry = new Date(payload.hourEntry).getTime();
 
-    this.logger.info({
-      message: "EXEC this.repositoryFactory.getAdminRepository",
-    });
-    const adminRepository = this.repositoryFactory.getAdminRepository();
+    const timeParked = dateToExit - dateToEntry;
 
-    this.logger.info({ message: "EXEC adminRepository.findById" });
-    const admin = await adminRepository.findById(id);
+    const freeParking = 10 * 60 * 1000;
+    const tier2Parking = 60 * 60 * 1000;
 
-    this.logger.info({ message: "RETURN OF find" });
-    return admin;
+    console.log("timeParked", timeParked);
+    console.log("freeParking", freeParking);
+    console.log("tier2Parking", tier2Parking);
+    console.log("timeParked > freeParking", timeParked > freeParking);
+    console.log("timeParked <= tier2Parking", timeParked <= tier2Parking);
+
+    if (timeParked <= freeParking) {
+      payload.valueToPay = 0;
+    } else {
+      if (timeParked <= tier2Parking) {
+        payload.valueToPay = 20;
+      } else {
+        const timeParkedInMinutes = timeParked / 1000 / 60;
+        const aditionalHours = Math.ceil((timeParkedInMinutes - 60) / 60);
+        payload.valueToPay = 20 * (aditionalHours + 1);
+      }
+    }
+
+    payload.hourExit = new Date(dateToExit);
+    payload.timeOfParking = timeParked;
+
+    console.log("payload  ==", payload);
+
+    const parkingRepository = this.repositoryFactory.getParkingRepository();
+
+    const parking = await parkingRepository.update(payload);
+
+    return parking;
   }
 }

@@ -1,16 +1,19 @@
 import { AbstractRepositoryFactory } from "../factory/AbstractRepositoryFactory";
-import { Parking } from "../entities/Parking";
-export class RegisterEntryDomain {
+
+export class GetParkingByLicensePlateDomain {
   repositoryFactory: AbstractRepositoryFactory;
 
   constructor(repositoryFactory: AbstractRepositoryFactory) {
     this.repositoryFactory = repositoryFactory;
   }
 
-  async create(payload: Parking) {
+  async find(licensePlate: string, type: "TO-CALC" | "TO-PAYD" | "TO-FINISH") {
     const parkingRepository = this.repositoryFactory.getParkingRepository();
 
-    const parking = await parkingRepository.register(payload);
+    const parking = await parkingRepository.getByLicensePlate(
+      licensePlate,
+      type
+    );
 
     return parking;
   }

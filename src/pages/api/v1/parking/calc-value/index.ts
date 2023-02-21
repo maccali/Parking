@@ -1,21 +1,16 @@
-import { RegisterAdmin } from "app/appServices/createAccount";
-import { RegisterAdmin } from "app/appServices/updateAccount";
-import { RegisterAdmin } from "app/appServices/showAccount";
-import { RegisterAdmin } from "app/appServices/deleteAccount";
-
-import { RegisterAdminInput } from "app/dtos/RegisterAdminDTO";
-import { AdminValidator } from "app/validators/RegisterAdminValidator";
 import { NextApiRequest, NextApiResponse } from "next";
 import NextCors from "nextjs-cors";
 import { left } from "shared/either";
-import { PrismaRepositoryFactory } from "shared/infra/factory/PrismaRepositoryFactory";
-import { registerAdminMiddleware } from "shared/middlewares/functions/registerAdmin";
 import { GenericLeftSolver } from "shared/solvers/left/genericLeftSolver";
-import { EnvHelper } from "shared/utils/envHelper";
-import { v4 as uuidv4 } from "uuid";
 
-const USER_POOL_ID = EnvHelper.adminPoolId;
-const CLIENT_ID = EnvHelper.adminClientPoolId;
+import { autenticationMiddleware } from "shared/middlewares/functions/autentication";
+
+import { RegisterCalcValidator } from "app/validators/RegisterCalcValidator";
+import { PrismaRepositoryFactory } from "shared/infra/factory/PrismaRepositoryFactory";
+
+import { CalcValue } from "app/appServices/calcValue";
+
+import { RegisterCalcInput } from "app/dtos/RegisterCalcDTO";
 
 const handler = async (request: NextApiRequest, response: NextApiResponse) => {
   await NextCors(request, response, {
@@ -24,17 +19,21 @@ const handler = async (request: NextApiRequest, response: NextApiResponse) => {
     optionsSuccessStatus: 200,
   });
 
+  if (request.method !== "POST") {
+    return response.status(404).json("");
+  }
+
+  const authorize = await autenticationMiddleware(request);
+  console.log("authorize", authorize);
+  if (authorize.value.statusCode !== 200) {
+    return response.status(authorize.value.statusCode).json(authorize.value);
+  }
+
   try {
-    const authorize = await registerAdminMiddleware(request, logger);
-
-    if (authorize.status !== 200) {
-      return response.status(authorize.status).json(authorize.message);
-    }
-
-    const adminValidator = new AdminValidator(request.body);
-
-    const isValidData = await adminValidator.validateData(adminValidator);
-
+    const registerCalcValidator = new RegisterCalcValidator(request.body);
+    const isValidData = await registerCalcValidator.validateData(
+      registerCalcValidator
+    );
     if (isValidData.isLeft()) {
       return response.status(isValidData.value.statusCode).json({
         describe: isValidData.value.describe,
@@ -42,25 +41,17 @@ const handler = async (request: NextApiRequest, response: NextApiResponse) => {
       });
     }
 
-    const cognitoProvider = new CognitoProvider(
-      USER_POOL_ID,
-      CLIENT_ID,
-      logger
-    );
+    const prismaRepositoryFactory = new PrismaRepositoryFactory();
 
-    const dynamoRepositoryFactory = new DynamoRepositoryFactory(logger);
+    const registerCalcInput = new RegisterCalcInput(registerCalcValidator);
 
-    const registerAdmin = new RegisterAdmin(
-      dynamoRepositoryFactory,
-      cognitoProvider
-    );
+    const registerCalc = new CalcValue(prismaRepositoryFactory);
 
-    const registerAdminInput = new RegisterAdminInput(adminValidator);
+    const registerCalcOutput = await registerCalc.execute(registerCalcInput);
 
-    const registerAdminOutput = await registerAdmin.execute(registerAdminInput);
-
-    return response.status(200).json(registerAdminOutput);
+    return response.status(200).json(registerCalcOutput.value);
   } catch (error) {
+    console.log("error", error);
     const leftError = left(GenericLeftSolver.leftGeneric());
 
     return response.status(leftError.value.statusCode).json({
