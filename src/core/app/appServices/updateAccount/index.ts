@@ -2,7 +2,7 @@ import { AbstractRepositoryFactory } from "../../../domain/factory/AbstractRepos
 
 import { EditAccount } from "../../../domain/domainServices/EditAccount";
 
-import { CreateRightSolver } from "shared/solvers/right/registerRightSolver";
+import { UpdateRightSolver } from "shared/solvers/right/updateRightSolver";
 import { Account } from "domain/entities/Account";
 
 import { Either, left, right } from "shared/either";
@@ -31,6 +31,6 @@ export class UpdateAccount {
 
     const accountDomain = await editAccount.update(account);
 
-    return right(CreateRightSolver.rightCreated(accountDomain));
+    return right(UpdateRightSolver.rightUpdated(accountDomain));
   }
 }

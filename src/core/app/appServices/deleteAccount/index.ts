@@ -2,7 +2,7 @@ import { AbstractRepositoryFactory } from "../../../domain/factory/AbstractRepos
 
 import { DeleteAccountDomain } from "../../../domain/domainServices/DeleteAccount";
 
-import { CreateRightSolver } from "shared/solvers/right/registerRightSolver";
+import { DeleteRightSolver } from "shared/solvers/right/deleteRightSolver";
 
 import { Either, left, right } from "shared/either";
 import { IError } from "shared/IError";
@@ -23,6 +23,6 @@ export class DeleteAccount {
 
     const accountDomain = await deleteAccount.delete(id);
 
-    return right(CreateRightSolver.rightCreated(accountDomain));
+    return right(DeleteRightSolver.rightDeleted(accountDomain));
   }
 }

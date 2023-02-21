@@ -46,7 +46,7 @@ const handler = async (request: NextApiRequest, response: NextApiResponse) => {
         createAccountInput
       );
 
-      return response.status(200).json(createAccountOutput);
+      return response.status(200).json(createAccountOutput.value);
     }
 
     return response.status(404).json("");

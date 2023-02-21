@@ -1,7 +1,7 @@
 import { AbstractRepositoryFactory } from "../../../domain/factory/AbstractRepositoryFactory";
 import { GetAccount } from "../../../domain/domainServices/GetAccount";
 
-import { CreateRightSolver } from "shared/solvers/right/registerRightSolver";
+import { ShowRightSolver } from "shared/solvers/right/showRightSolver";
 
 import { Either, left, right } from "shared/either";
 import { IError } from "shared/IError";
@@ -21,6 +21,6 @@ export class ShowAccount {
 
     const accountDomain = await getAccount.find(id);
 
-    return right(CreateRightSolver.rightCreated(accountDomain));
+    return right(ShowRightSolver.rightShowed(accountDomain));
   }
 }

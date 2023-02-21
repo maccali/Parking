@@ -2,14 +2,9 @@ import { NextApiRequest, NextApiResponse } from "next";
 import NextCors from "nextjs-cors";
 import { left } from "shared/either";
 
-import { CreateAccount } from "app/appServices/createAccount";
-import { UpdateAccount } from "app/appServices/updateAccount";
-import { ShowAccount } from "app/appServices/showAccount";
-import { DeleteAccount } from "app/appServices/deleteAccount";
+import { AuthAccount } from "app/appServices/authAccount";
 
-import { CreateAccountInput } from "app/dtos/CreateAccountDTO";
-import { ShowAccountInput } from "app/dtos/ShowAccountDTO";
-import { UpdateAccountInput } from "app/dtos/UpdateAccountDTO";
+import { LoginInput } from "app/dtos/LoginDTO";
 
 import { AdminValidator } from "app/validators/RegisterAdminValidator";
 
@@ -30,8 +25,8 @@ const handler = async (request: NextApiRequest, response: NextApiResponse) => {
   });
 
   try {
-    if (request.method !== "POST") {
-      const accountCreateValidator = new CreateAccountValidator(request.body);
+    if (request.method == "POST") {
+      const accountCreateValidator = new LoginValidator(request.body);
 
       const isValidData = await accountCreateValidator.validateData(
         accountCreateValidator
@@ -43,8 +38,17 @@ const handler = async (request: NextApiRequest, response: NextApiResponse) => {
           result: isValidData.value.result,
         });
       }
-    }
 
+      const prismaRepositoryFactory = new PrismaRepositoryFactory();
+
+      const loginInput = new LoginInput(accountCreateValidator);
+
+      const login = new AuthAccount(prismaRepositoryFactory);
+
+      const loginOutput = await login.execute(loginInput);
+
+      return response.status(200).json(loginOutput.value);
+    }
     return response.status(404).json("");
   } catch (error) {
     const leftError = left(GenericLeftSolver.leftGeneric());

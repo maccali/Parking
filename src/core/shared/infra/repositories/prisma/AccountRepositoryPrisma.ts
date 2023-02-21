@@ -17,6 +17,11 @@ export class AccountRepositoryPrisma implements IAccountRepository {
     return user;
   }
 
+  async findByNickname(nickname: string): Promise<any> {
+    const user = await prisma.user.findUnique({ where: { nickname } });
+    return user;
+  }
+
   async deleteById(id: string): Promise<any> {
     const user = await prisma.user.delete({ where: { id } });
 

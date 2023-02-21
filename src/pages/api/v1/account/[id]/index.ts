@@ -56,7 +56,7 @@ const handler = async (request: NextApiRequest, response: NextApiResponse) => {
         updateAccountInput
       );
 
-      return response.status(200).json(createAccountOutput);
+      return response.status(200).json(createAccountOutput.value);
     }
 
     if (request.method == "GET") {
@@ -71,7 +71,7 @@ const handler = async (request: NextApiRequest, response: NextApiResponse) => {
 
       const showAccountOutput = await showAccount.execute(showAccountInput);
 
-      return response.status(200).json(showAccountOutput);
+      return response.status(200).json(showAccountOutput.value);
     }
 
     if (request.method == "DELETE") {
@@ -87,7 +87,7 @@ const handler = async (request: NextApiRequest, response: NextApiResponse) => {
         deleteAccountInput
       );
 
-      return response.status(200).json(deleteAccountOutput);
+      return response.status(200).json(deleteAccountOutput.value);
     }
 
     return response.status(404).json("");
