@@ -16,8 +16,8 @@ export class Account {
     this.password = bcrypt.hashSync(password, 10);
     this.createdAt = new Date(createDate).getTime();
 
-    if (!id) {
-      this.id = uuid();
-    }
+    // if (!id) {
+    // this.id = uuid();
+    // }
   }
 }

@@ -1,10 +1,9 @@
-import { RegisterAdmin } from "app/appServices/createAccount";
-import { RegisterAdmin } from "app/appServices/updateAccount";
-import { RegisterAdmin } from "app/appServices/showAccount";
-import { RegisterAdmin } from "app/appServices/deleteAccount";
+import { CreateAccount } from "app/appServices/createAccount";
 
-import { RegisterAdminInput } from "app/dtos/RegisterAdminDTO";
-import { AdminValidator } from "app/validators/RegisterAdminValidator";
+import { CreateAccountInput } from "app/dtos/CreateAccountDTO";
+
+import { CreateAccountValidator } from "app/validators/CreateAccountValidator";
+
 import { NextApiRequest, NextApiResponse } from "next";
 import NextCors from "nextjs-cors";
 import { left } from "shared/either";
@@ -24,28 +23,36 @@ const handler = async (request: NextApiRequest, response: NextApiResponse) => {
   try {
     if (request.method == "POST") {
       // Registra conta
-      return response.status(404).json("");
-    }
+      const accountCreateValidator = new CreateAccountValidator(request.body);
 
-    if (request.method == "PUT") {
-      // Edita Conta
-      return response.status(404).json("");
-    }
+      const isValidData = await accountCreateValidator.validateData(
+        accountCreateValidator
+      );
 
-    if (request.method == "GET") {
-      // Busca conta
-      return response.status(404).json("");
-    }
+      if (isValidData.isLeft()) {
+        return response.status(isValidData.value.statusCode).json({
+          describe: isValidData.value.describe,
+          result: isValidData.value.result,
+        });
+      }
 
-    if (request.method == "DELETE") {
-      // deleta conta
-      return response.status(404).json("");
+      const prismaRepositoryFactory = new PrismaRepositoryFactory();
+
+      const createAccountInput = new CreateAccountInput(accountCreateValidator);
+
+      const createAccount = new CreateAccount(prismaRepositoryFactory);
+
+      const createAccountOutput = await createAccount.execute(
+        createAccountInput
+      );
+
+      return response.status(200).json(createAccountOutput);
     }
 
     return response.status(404).json("");
   } catch (error) {
+    console.log("error", error);
     const leftError = left(GenericLeftSolver.leftGeneric());
-
     return response.status(leftError.value.statusCode).json({
       describe: leftError.value.describe,
     });

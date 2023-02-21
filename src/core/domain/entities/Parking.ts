@@ -1,6 +1,6 @@
 import { v4 as uuid } from "uuid";
 
-export class Account {
+export class Parking {
   id?: string;
   licensePlate: string;
   hourEntry: number;
@@ -21,7 +21,7 @@ export class Account {
     valueToPay,
     valuePaid,
     discount,
-  }: Account) {
+  }: Parking) {
     const createDate = new Date().toISOString();
 
     this.id = id;

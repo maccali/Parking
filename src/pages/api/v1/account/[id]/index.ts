@@ -2,16 +2,17 @@ import { NextApiRequest, NextApiResponse } from "next";
 import NextCors from "nextjs-cors";
 import { left } from "shared/either";
 
+import { DeleteAccount } from "app/appServices/deleteAccount";
 import { CreateAccount } from "app/appServices/createAccount";
 import { UpdateAccount } from "app/appServices/updateAccount";
-import { ShowAccount } from "app/appServices/showAccount";
-import { DeleteAccount } from "app/appServices/deleteAccount";
 
 import { CreateAccountInput } from "app/dtos/CreateAccountDTO";
 import { ShowAccountInput } from "app/dtos/ShowAccountDTO";
 import { UpdateAccountInput } from "app/dtos/UpdateAccountDTO";
 
-import { AdminValidator } from "app/validators/RegisterAdminValidator";
+import { AdminValidator } from "app/validators/DeleteAccountValidator";
+import { AdminValidator } from "app/validators/ShowAccountValidator";
+import { AdminValidator } from "app/validators/CreateAccountValidator";
 
 import { PrismaRepositoryFactory } from "shared/infra/factory/PrismaRepositoryFactory";
 import { registerAdminMiddleware } from "shared/middlewares/functions/registerAdmin";
@@ -27,11 +28,6 @@ const handler = async (request: NextApiRequest, response: NextApiResponse) => {
   });
 
   try {
-    if (request.method == "POST") {
-      // Registra conta
-      return response.status(404).json("");
-    }
-
     if (request.method == "PUT") {
       // Edita Conta
       return response.status(404).json("");
@@ -43,7 +39,7 @@ const handler = async (request: NextApiRequest, response: NextApiResponse) => {
     }
 
     if (request.method == "DELETE") {
-      // deleta conta
+      // Deleta conta
       return response.status(404).json("");
     }
 

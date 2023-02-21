@@ -1,7 +1,16 @@
-
 import { AbstractRepositoryFactory } from "../../../domain/factory/AbstractRepositoryFactory";
-import { FindAdmin } from "../../../domain/domainServices/FindAdmin";
+import { CreateAccountDomain } from "../../../domain/domainServices/CreateAccount";
 
+import { CreateRightSolver } from "shared/solvers/right/registerRightSolver";
+import { Account } from "domain/entities/Account";
+
+import { Either, left, right } from "shared/either";
+import { IError } from "shared/IError";
+import { ISuccess } from "shared/ISuccess";
+interface IExecInput {
+  nickname: string;
+  password: string;
+}
 export class CreateAccount {
   repositoryFactory: AbstractRepositoryFactory;
 
@@ -9,5 +18,16 @@ export class CreateAccount {
     this.repositoryFactory = repositoryFactory;
   }
 
-  async execute(email: string, password: string) {}
+  async execute({
+    nickname,
+    password,
+  }: IExecInput): Promise<Either<IError, ISuccess>> {
+    const createAccount = new CreateAccountDomain(this.repositoryFactory);
+
+    const account = new Account({ nickname, password });
+
+    const accountDomain = await createAccount.create(account);
+
+    return right(CreateRightSolver.rightCreated(accountDomain));
+  }
 }
