@@ -15,6 +15,9 @@ import { AdminValidator } from "app/validators/RegisterAdminValidator";
 
 import { PrismaRepositoryFactory } from "shared/infra/factory/PrismaRepositoryFactory";
 import { registerAdminMiddleware } from "shared/middlewares/functions/registerAdmin";
+
+import { LoginValidator } from "app/validators/LoginValidator";
+
 import { GenericLeftSolver } from "shared/solvers/left/genericLeftSolver";
 import { EnvHelper } from "shared/utils/envHelper";
 import { v4 as uuidv4 } from "uuid";
@@ -27,24 +30,19 @@ const handler = async (request: NextApiRequest, response: NextApiResponse) => {
   });
 
   try {
-    if (request.method == "POST") {
-      // Registra conta
-      return response.status(404).json("");
-    }
+    if (request.method !== "POST") {
+      const accountCreateValidator = new CreateAccountValidator(request.body);
 
-    if (request.method == "PUT") {
-      // Edita Conta
-      return response.status(404).json("");
-    }
+      const isValidData = await accountCreateValidator.validateData(
+        accountCreateValidator
+      );
 
-    if (request.method == "GET") {
-      // Busca conta
-      return response.status(404).json("");
-    }
-
-    if (request.method == "DELETE") {
-      // deleta conta
-      return response.status(404).json("");
+      if (isValidData.isLeft()) {
+        return response.status(isValidData.value.statusCode).json({
+          describe: isValidData.value.describe,
+          result: isValidData.value.result,
+        });
+      }
     }
 
     return response.status(404).json("");

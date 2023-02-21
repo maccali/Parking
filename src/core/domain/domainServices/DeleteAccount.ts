@@ -1,30 +1,17 @@
 import { AbstractRepositoryFactory } from "../factory/AbstractRepositoryFactory";
-import { LoggerInterface } from "shared/infra/logger/logger.interface";
 
-export class FindAdmin {
+export class DeleteAccountDomain {
   repositoryFactory: AbstractRepositoryFactory;
-  logger: LoggerInterface;
 
-  constructor(
-    repositoryFactory: AbstractRepositoryFactory,
-    logger: LoggerInterface
-  ) {
+  constructor(repositoryFactory: AbstractRepositoryFactory) {
     this.repositoryFactory = repositoryFactory;
-    this.logger = logger;
   }
 
-  async find(id: string) {
-    this.logger.info({ message: "INIT find" });
+  async delete(id: string) {
+    const accountRepository = this.repositoryFactory.getAccountRepository();
 
-    this.logger.info({
-      message: "EXEC this.repositoryFactory.getAdminRepository",
-    });
-    const adminRepository = this.repositoryFactory.getAdminRepository();
+    const account = await accountRepository.deleteById(id);
 
-    this.logger.info({ message: "EXEC adminRepository.findById" });
-    const admin = await adminRepository.findById(id);
-
-    this.logger.info({ message: "RETURN OF find" });
-    return admin;
+    return account;
   }
 }

@@ -1,7 +1,7 @@
 export class ShowAccountInput {
-  nickname: string;
+  id: string;
 
-  constructor({ nickname }: ShowAccountInput) {
-    this.nickname = nickname;
+  constructor({ id }: ShowAccountInput) {
+    this.id = id;
   }
 }

@@ -13,7 +13,7 @@ export class AccountRepositoryPrisma implements IAccountRepository {
         delete user.password;
       }
     }
-    
+
     return user;
   }
 

@@ -3,16 +3,14 @@ import NextCors from "nextjs-cors";
 import { left } from "shared/either";
 
 import { DeleteAccount } from "app/appServices/deleteAccount";
-import { CreateAccount } from "app/appServices/createAccount";
 import { UpdateAccount } from "app/appServices/updateAccount";
+import { ShowAccount } from "app/appServices/showAccount";
 
-import { CreateAccountInput } from "app/dtos/CreateAccountDTO";
+import { DeleteAccountInput } from "app/dtos/DeleteAccountDTO";
 import { ShowAccountInput } from "app/dtos/ShowAccountDTO";
 import { UpdateAccountInput } from "app/dtos/UpdateAccountDTO";
 
 import { UpdateAccountValidator } from "app/validators/UpdateAccountValidator";
-// import { AdminValidator } from "app/validators/DeleteAccountValidator";
-// import { AdminValidator } from "app/validators/ShowAccountValidator";
 
 import { PrismaRepositoryFactory } from "shared/infra/factory/PrismaRepositoryFactory";
 import { registerAdminMiddleware } from "shared/middlewares/functions/registerAdmin";
@@ -63,12 +61,33 @@ const handler = async (request: NextApiRequest, response: NextApiResponse) => {
 
     if (request.method == "GET") {
       // Busca conta
-      return response.status(404).json("");
+      const prismaRepositoryFactory = new PrismaRepositoryFactory();
+
+      const showAccountInput = new ShowAccountInput({
+        id: String(id),
+      });
+
+      const showAccount = new ShowAccount(prismaRepositoryFactory);
+
+      const showAccountOutput = await showAccount.execute(showAccountInput);
+
+      return response.status(200).json(showAccountOutput);
     }
 
     if (request.method == "DELETE") {
-      // Deleta conta
-      return response.status(404).json("");
+      const prismaRepositoryFactory = new PrismaRepositoryFactory();
+
+      const deleteAccountInput = new DeleteAccountInput({
+        id: String(id),
+      });
+
+      const deleteAccount = new DeleteAccount(prismaRepositoryFactory);
+
+      const deleteAccountOutput = await deleteAccount.execute(
+        deleteAccountInput
+      );
+
+      return response.status(200).json(deleteAccountOutput);
     }
 
     return response.status(404).json("");
