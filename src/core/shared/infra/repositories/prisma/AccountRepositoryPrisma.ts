@@ -7,11 +7,23 @@ const prisma = new PrismaClient();
 export class AccountRepositoryPrisma implements IAccountRepository {
   async findById(id: string): Promise<any> {
     const user = await prisma.user.findUnique({ where: { id } });
+
+    if (user) {
+      if (user.password) {
+        delete user.password;
+      }
+    }
+    
     return user;
   }
 
   async deleteById(id: string): Promise<any> {
     const user = await prisma.user.delete({ where: { id } });
+
+    if (user.password) {
+      delete user.password;
+    }
+
     return user;
   }
 
@@ -22,6 +34,10 @@ export class AccountRepositoryPrisma implements IAccountRepository {
         password: account.password,
       },
     });
+
+    if (user.password) {
+      delete user.password;
+    }
 
     return user;
   }
@@ -34,6 +50,11 @@ export class AccountRepositoryPrisma implements IAccountRepository {
         password: account.password,
       },
     });
+
+    if (user.password) {
+      delete user.password;
+    }
+
     return user;
   }
 }
